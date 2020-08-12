@@ -1,4 +1,5 @@
 import ui
+import app_ui
 
 __all__ = ['Book_Icon']
 
@@ -21,7 +22,7 @@ class Book_Icon(ui.View):
 		self.add_subview(img_box)
 		
 	def open_page(self,button):
-		page = Gallery_Page(self.App)
+		page = app_ui.Gallery_Page(self.App)
 		page.set_info(self.book)
 		page.present('fullscreen',hide_title_bar=True)
 		

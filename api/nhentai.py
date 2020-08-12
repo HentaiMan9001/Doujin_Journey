@@ -261,9 +261,10 @@ class nhentai_api():
 		self.page = 1
 		self.App = App
 		
-	def read(self,Book):
+	def read(self, Book):
 		link = Book.link
-		view = reader(Book.title)
+		view = self.App.reader
+		view.clear_book()
 		view.present('fullscreen',hide_title_bar = True)
 		nhentai_read(link, view)
 		

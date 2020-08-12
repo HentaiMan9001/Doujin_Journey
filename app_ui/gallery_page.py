@@ -60,9 +60,9 @@ class section(ui.View):
 			
 		
 class Gallery_Page(ui.View):
-	def __init__(self,App):
-		self.client = App.client
-		self.width,self.height = ui.get_screen_size()
+	def __init__(self, App):
+		self.App = App
+		
 		self.bg_color = 'white'
 		title = ui.Label()
 		title.text = 'n/a'
@@ -126,7 +126,7 @@ class Gallery_Page(ui.View):
 		view.present('fullscreen',hide_title_bar=True)
 		nhentai_read(url,view)
 		'''
-		self.client.read(self.book)
+		self.App.client.read(self.book)
 	def save(self,button):
 		link = self.book.link
 		self.client.download_book(self.save_button, link)

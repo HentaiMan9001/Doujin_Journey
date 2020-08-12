@@ -221,7 +221,7 @@ def grid(view_list = list(),parent_view = None, dim = (50,50), views_per_row =
 	
 	if type(parent_view) is ui.ScrollView:
 		i = len(view_list)
-		content_size = (parent_view.width, y(i + 2))
+		content_size = (parent_view.width, y(i + views_per_row))
 		
 		if parent_view.content_size == content_size:
 			pass

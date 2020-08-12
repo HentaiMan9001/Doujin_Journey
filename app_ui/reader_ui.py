@@ -11,12 +11,9 @@ class reader(ui.View):
 		self.App = App
 		
 		gap = 4
-		w,h = ui.get_screen_size()
 		
 		self.update_interval = 0.1
-		
-		self.width = w
-		self.height = h
+
 		self.background_color='#aeb5b5'
 		
 		self.labels = list()
@@ -62,17 +59,20 @@ class reader(ui.View):
 		scrollview.y = progress.y + progress.height+gap
 		scrollview.bg_color = '#aeb5b5'
 		scrollview.height = self.height-progress.y-progress.height-gap
+		scrollview.is_filling_screen = False
 		gestures.swipe(scrollview,self.next,direction=gestures.LEFT)
 		gestures.swipe(scrollview,self.previous,direction=gestures.RIGHT)
-		gestures.swipe(self,self.close_self,direction=gestures.DOWN)
+		gestures.swipe(self,self.revert_scrollview,direction=gestures.DOWN)
 		gestures.swipe(scrollview,self.fill_screen,direction=gestures.UP)
 		
 		scrollview.add_subview(image_box)
 		self.add_subview(scrollview)
 		
 	def clear_book(self):
-		self.image_box.image = ''
+		self.image_box.image = None
 		self.index.image_list.clear()
+		self.progress.text = '0/0'
+		self.page_label.text = '0'
 		
 	def set_book(self, book):
 		self.image_box.image = ''
@@ -81,27 +81,38 @@ class reader(ui.View):
 		scrollview = self.scrollview
 		progress = self.progress
 		gap = 4
-		if scrollview.height != self.height:
-			scrollview.y = 0
-			scrollview.height = self.height
-		elif scrollview.height == self.height:
-			scrollview.y = progress.y + progress.height+gap
-			scrollview.height = self.scrollview_height
-			
-	def close_self(self,data):
-		if self.scrollview.height == self.height:
-			ui.animate(self.exp_ret_scrollview,duration = 1)
+		if scrollview._is_filling_screen:
+			scrollview.frame = scrollview.filled_frame 
 		else:
-			self.is_reading = False
-			self.clear_book()
-			self.close()
+			scrollview.frame = self.not_filled_frame
+	def revert_scrollview(self, data):
+		scrollview = self.scrollview
+		if scrollview.is_filling_screen:
+			scrollview.is_filling_screen = False
+		else:
+			self.close_self()
+			
+	def close_self(self):
+		self.is_reading = False
+		self.clear_book()
+		self.close()
 			
 	def fill_screen(self, data):
-		ui.animate(self.exp_ret_scrollview,duration = 1)
+		scrollview = self.scrollview
+		if scrollview.is_filling_screen:
+			pass
+		else:
+			scrollview.is_filling_screen = True
 		
 	def download(self, button):
 		scripts.save_book(self.progress, self.book_title, self.index.image_list)
-		
+
+	def check_scrollview(self):
+		scrollview = self.scrollview
+		if scrollview.is_filling_screen:
+			scrollview.frame = scrollview.filled_frame
+		else:
+			scrollview.frame = scrollview.not_filled_frame
 	def layout(self):
 		
 		scrollview = self.scrollview
@@ -120,7 +131,11 @@ class reader(ui.View):
 		progress.width = self.width - 2*gap
 		progress.height = base_height - 2* gap
 		
+		scrollview.filled_frame = self.bounds
 		
+		scrollview.not_filled_frame = (0, progress.y + progress.height + gap, self.width, self.height - (progress.y + progress.height + gap))
+		
+		self.check_scrollview()
 		
 		page_label.center = (self.width/2,self.height-page_label.height/2)
 		page_label.bring_to_front()
