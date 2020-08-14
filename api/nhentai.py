@@ -260,6 +260,18 @@ class nhentai_api():
 		self.history = []
 		self.page = 1
 		self.App = App
+		max_pages = {
+			'type':'number',
+			'title':'Max Pages:'
+			'key':'max'
+		}
+		
+		max_pages = {
+			'type':'number',
+			'title':'Max Pages:'
+			'key':'max'
+		}
+		self.query_fields = [max_pages, min_pages]
 		
 	def read(self, Book):
 		link = Book.link
