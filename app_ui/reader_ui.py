@@ -1,167 +1,173 @@
-import ui,gestures
+import ui
+import scripts
+import gestures
 
-from scripts import *
-from app_ui import *
-	
-	
-__all__ = ['reader']
+__all__ = ['Reader']
 
-class reader(ui.View):
+class Page_View_Delegate (object):
+	def __init__(self, page_label):
+		self.page_label = page_label	
+	def scrollview_did_scroll(self, scrollview):
+		page_width = scrollview.width
+		x,y = scrollview.content_offset
+		
+		scrollview.page = (x//page_width) + 1
+		self.page_label.text = str(int(scrollview.page))
+
+class Progres_Indicator(ui.View):
+	def __init__(self):
+		self.max = 0
+		self.count = 0
+
+		self.corner_radius = 4
+		self.background_color = 'grey'
+		self.alpha = 0.8
+		
+		self.is_showing = False
+		
+		
+		self.current_page = 0
+		
+		self.exit_button = exit_button = ui.Button()
+		exit_button.image = ui.Image.named('iob:close_32')
+		self.add_subview(exit_button)
+		
+		self.border_width = 1
+		self.label = label = ui.Label()
+		label.text = '0/0'
+		label.alignment = ui.ALIGN_CENTER
+		self.add_subview(label)
+		
+	def reset(self):
+		self.max = 0
+		self.count = 0
+		self.set_label()
+		
+	def set(self, max):
+		self.max = max
+		self.set_label()
+		
+	def set_label(self):
+		self.label.text = '%s/%s'%(self.count, self.max)
+		
+	def update(self):
+		self.count += 1
+		self.set_label()
+		
+	def layout(self):
+		button = self.exit_button
+		button.frame = (0, 0, self.height, self.height)
+		
+		label = self.label
+		label.frame = (button.width,0, self.width - button.width, self.height)
+		
+
+class Reader(ui.View):
 	def __init__(self, App):
 		self.App = App
-		
-		gap = 4
-		
-		self.update_interval = 0.1
-
-		self.background_color='#aeb5b5'
-		
-		self.labels = list()
-		self.buttons = list()
-		
-		self.index = Indexer()
+		self.background_color = 'white'
 		
 		self.is_reading = True
 		
-		progress = ui.Label()
-		progress.text = 'Progress = n/a'
-		progress.width = self.width
-		progress.height = 40
-		progress.corner_radius = 3
-		progress.border_width = 1
-		self.labels.append(progress)
-		self.progress = progress
-		self.add_subview(progress)
+		self.page = page = ui.Label()
+		page.text = '0'
+		page.alignment = ui.ALIGN_CENTER
+		page.bring_to_front()
+		self.add_subview(page)
 		
-		download_button = ui.Button()
-		download_button.background_image = ui.Image.named('iob:ios7_download_32')
-		self.download_button = download_button
-		download_button.action = self.download
-		self.add_subview(download_button)
+		self.page_view = page_view = ui.ScrollView()
+		page_view.delegate = Page_View_Delegate(page)
+		page_view.send_to_back()
+		self.add_subview(page_view)
+		page_view.shows_horizontal_scroll_indicator =False
+		page_view.shows_vertical_scroll_indicator = False
+		page_view.paging_enabled =True
+		tap = gestures.tap(page_view, self.page_was_tapped)
 		
-		page_label = ui.Label()
-		page_label.text = '0'
-		page_label.width = 30
-		page_label.height = 30
-		page_label.center = (self.width/2,self.height-page_label.width/2)
-		self.labels.append(page_label)
-		self.page_label = page_label
-		self.add_subview(page_label)
+		self.progress_bar = progress_bar = Progres_Indicator()
+		progress_bar.exit_button.action = self.close_reader
+		self.add_subview(progress_bar)
 		
-		image_box = self.image_box = ui.ImageView()
-		 
+		self.page_holders = list()
+		self.pages = list()
 		
-		self.scrollview = scrollview = ui.ScrollView()
-		self.scrollview_height = self.height-progress.y -progress.height-gap
-		scrollview.border_width = 1
-		scrollview.width = self.width
-		scrollview.x = 0
-		scrollview.y = progress.y + progress.height+gap
-		scrollview.bg_color = '#aeb5b5'
-		scrollview.height = self.height-progress.y-progress.height-gap
-		scrollview.is_filling_screen = False
-		gestures.swipe(scrollview,self.next,direction=gestures.LEFT)
-		gestures.swipe(scrollview,self.previous,direction=gestures.RIGHT)
-		gestures.swipe(self,self.revert_scrollview,direction=gestures.DOWN)
-		gestures.swipe(scrollview,self.fill_screen,direction=gestures.UP)
-		
-		scrollview.add_subview(image_box)
-		self.add_subview(scrollview)
-		
-	def clear_book(self):
-		self.image_box.image = None
-		self.index.image_list.clear()
-		self.progress.text = '0/0'
-		self.page_label.text = '0'
-		
-	def set_book(self, book):
-		self.image_box.image = ''
-		
-	def exp_ret_scrollview(self):
-		scrollview = self.scrollview
-		progress = self.progress
-		gap = 4
-		if scrollview._is_filling_screen:
-			scrollview.frame = scrollview.filled_frame 
-		else:
-			scrollview.frame = self.not_filled_frame
-	def revert_scrollview(self, data):
-		scrollview = self.scrollview
-		if scrollview.is_filling_screen:
-			scrollview.is_filling_screen = False
-		else:
-			self.close_self()
-			
-	def close_self(self):
+	def close_reader(self, button):
 		self.is_reading = False
-		self.clear_book()
 		self.close()
-			
-	def fill_screen(self, data):
-		scrollview = self.scrollview
-		if scrollview.is_filling_screen:
-			pass
-		else:
-			scrollview.is_filling_screen = True
-		
-	def download(self, button):
-		scripts.save_book(self.progress, self.book_title, self.index.image_list)
-
-	def check_scrollview(self):
-		scrollview = self.scrollview
-		if scrollview.is_filling_screen:
-			scrollview.frame = scrollview.filled_frame
-		else:
-			scrollview.frame = scrollview.not_filled_frame
-	def layout(self):
-		
-		scrollview = self.scrollview
-		progress,page_label = self.progress,self.page_label
-		image_box = self.image_box
-		gap = 4
-		
-		base_height = 40
-		
-		
-		for label in self.labels:
-			label.alignment = ui.ALIGN_CENTER
-		
-		progress.x = gap
-		progress.y = gap
-		progress.width = self.width - 2*gap
-		progress.height = base_height - 2* gap
-		
-		scrollview.filled_frame = self.bounds
-		
-		scrollview.not_filled_frame = (0, progress.y + progress.height + gap, self.width, self.height - (progress.y + progress.height + gap))
-		
-		self.check_scrollview()
-		
-		page_label.center = (self.width/2,self.height-page_label.height/2)
-		page_label.bring_to_front()
-		
-		image_box.frame = scrollview.bounds
-		
-	def set(self, max):
-		self.index.set(max)
-		
-	def update(self):
-		self.page_label.text = str(self.index.count + 1)
-		self.progress.text = 'Progress = %s/%s'%self.index.get()
-		
-	def update_reader(self, data):
-		self.index.append(data)
-		if len(self.index.image_list) == 1:
-			self.image_box.image = ui.Image.from_data(data)
-			self.update()
 	
-	def next(self,data):
-		self.index.next()
-		self.page_label.text = str(self.index.count+1)
-		image = ui.Image.from_data(self.index.index())
-		self.image_box.image = image
+	def reset_reader(self):
+		for view in self.page_view.subviews:
+			self.page_view.remove_subview(view)
+		self.page_holders.clear()
+		self.pages.clear()
+		self.progress_bar.reset()
+		self.is_reading = True
+		self.page.text = '1'
+		self.page_view.content_offset = (0,0)
 
-	def previous(self,data):
-		self.index.previous()
-		self.page_label.text = str(self.index.count+1)
-		self.image_box.image = ui.Image.from_data(self.index.index())
+	#@ui.in_background
+	def set_reader(self, page_count):
+		self.progress_bar.set(page_count)
+		w,h = ui.get_screen_size()
+		size = lambda i: (w * i,h-18)
+		self.page_view.content_size = size(page_count)
+		'''
+		for _ in range(page_count):
+			holder = ui.ActivityIndicator()
+			holder.style = ui.ACTIVITY_INDICATOR_STYLE_GRAY
+			holder.start()
+			holder.hides_when_stopped = True
+			self.page_holders.append(holder)
+			self.page_view.add_subview(holder)
+		'''
+			
+	def add_page(self, image_data):
+		
+		w,h = ui.get_screen_size()
+		frame = lambda i: (w*i,0,w,h-18)
+		
+		self.progress_bar.update()
+		image_view = ui.ImageView()
+		image = ui.Image.from_data(image_data)
+		image_view.image = image
+		self.pages.append(image_view)
+		count = self.pages.index(image_view)
+		image_view.frame = frame(count)
+		image_view.send_to_back()
+		#coresponding_holder = self.page_holders[count]
+		self.page_view.add_subview(image_view)
+	
+	def page_was_tapped(self, data):
+		progress_bar = self.progress_bar
+		if progress_bar.is_showing:
+			progress_bar.is_showing = False
+		else:
+			progress_bar.is_showing = True
+		ui.animate(self.layout, duration = 0.5)
+		
+	def layout(self):
+		spacer = 18
+		
+		page_view = self.page_view
+		progress_bar = self.progress_bar
+		progress_bar.height = 40
+		progress_bar.width = self.width
+		page_view.frame = (0, spacer, self.width, self.height - spacer)
+		
+		if progress_bar.is_showing:
+			progress_bar.y = spacer
+		else:
+			progress_bar.y = - progress_bar.height
+		
+		page = self.page
+		page.height = 20
+		page.x = 0
+		page.y = self.height - page.height
+		page.width = self.width
+
+def test():
+	view = Reader(None)
+	view.set_reader(10)
+	view.present('fullscreen',hide_title_bar = True)
+	
+

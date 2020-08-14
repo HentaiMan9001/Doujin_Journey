@@ -38,9 +38,9 @@ class Main_View(ui.View):
 
 	def add_book(self,book_obj):
 		book = app_ui.Book_Icon(book_obj,self.App)
-		self.scrollview.add_subview(book)
 		self.books.append(book)
 		self.layout()
+		self.scrollview.add_subview(book)
 		
 	def reset(self):
 		for book in self.books:

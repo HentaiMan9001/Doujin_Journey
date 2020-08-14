@@ -27,8 +27,6 @@ class section(ui.View):
 		
 	def layout(self):
 		title = self.title
-		title.x = 0
-		title.y = 0
 		title.alignment = ui.ALIGN_CENTER
 		title.width = self.width
 		title.height = 20
@@ -37,12 +35,8 @@ class section(ui.View):
 		scrolls.y = title.height
 		scrolls.width = self.width
 		scrolls.height = self.height-title.height
-		gap = self.gap
-		cols = 3
-		label_width = self.width/cols-2*gap
-		label_height = 30
 		
-		scripts.vert(view_list = self.items, parent_view = scrolls)
+		#scripts.vert(view_list = self.items)
 		
 class Gallery_Page(ui.View):
 	def __init__(self, App):
@@ -114,7 +108,7 @@ class Gallery_Page(ui.View):
 		
 	def save(self,button):
 		link = self.book.link
-		self.client.download_book(self.save_button, link)
+		self.App.client.download_book(self.save_button, link)
 		
 	def layout(self):
 		gap = 3

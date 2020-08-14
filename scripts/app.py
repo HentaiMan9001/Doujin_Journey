@@ -24,7 +24,7 @@ class App(object):
 		self.client = api.Api_Controller(self)
 		
 	def load_reader(self):
-		self.reader = reader(self)
+		self.reader = Reader(self)
 		
 	def load_main_menu(self):
 		self.nav = nav_bar(self)

@@ -1,3 +1,4 @@
+#from .new_reader import test
 from .search_bar import *
 from .book_icon import *
 from .reader_ui import *

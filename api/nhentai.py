@@ -228,13 +228,13 @@ def nhentai_read(url,view):
 	soup = make_soup(url)
 	img_urls=get_img_urls(soup)
 	url_count = len(img_urls)
-	view.set(url_count)
+	view.set_reader(url_count)
 	while view.is_reading:
 		with concurrent.futures.ThreadPoolExecutor() as exicutor:
 				results = exicutor.map(download_raw,img_urls)
 				for raw_data in results:
-					view.update_reader(raw_data)
-		if len(view.index.image_list) == url_count:
+					view.add_page(raw_data)
+		if len(view.pages) == url_count:
 			break
 				
 @ui.in_background
@@ -264,7 +264,7 @@ class nhentai_api():
 	def read(self, Book):
 		link = Book.link
 		view = self.App.reader
-		view.clear_book()
+		view.reset_reader()
 		view.present('fullscreen',hide_title_bar = True)
 		nhentai_read(link, view)
 		
