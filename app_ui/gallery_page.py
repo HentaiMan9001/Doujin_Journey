@@ -1,7 +1,6 @@
-import ui,gestures
+import ui
+import gestures
 import scripts
-import app_ui
-import api
 
 __all__ = ['Gallery_Page']
 
@@ -15,16 +14,17 @@ class section(ui.View):
 		self.add_subview(title)
 		
 		self.gap = 3
-		self.starting_y = self.gap
-		self.starting_x = self.gap
+	
 		scrolls = ui.ScrollView()
 		scrolls.border_width = 1
 		scrolls.corner_radius = 4
 		self.scrolls = scrolls
 		self.add_subview(scrolls)
-	def set(self,info):
+		
+	def set(self, info):
 		self.book_info = info
 		self.items = info[self.name]
+		
 	def layout(self):
 		title = self.title
 		title.x = 0
@@ -41,23 +41,8 @@ class section(ui.View):
 		cols = 3
 		label_width = self.width/cols-2*gap
 		label_height = 30
-		starting_y = self.starting_y
-		starting_x = self.starting_x
 		
-		for item in self.items:
-			if starting_x + gap > self.width:
-				starting_x = self.starting_x
-				starting_y += label_height+gap
-			if starting_y + label_height+gap>self.height:
-				scrolls.content_size = (self.width,starting_y + label_height+gap)
-			item.x = starting_x
-			item.y = starting_y
-			item.width = label_width
-			item.height = label_height
-			self.scrolls.add_subview(item)
-			starting_x+= label_width + gap
-			
-			
+		scripts.vert(view_list = self.items, parent_view = scrolls)
 		
 class Gallery_Page(ui.View):
 	def __init__(self, App):
@@ -70,12 +55,13 @@ class Gallery_Page(ui.View):
 		self.title = title
 		title.border_width=1
 		title.corner_radius=4
-		gestures.swipe(self,self.close_self,direction=gestures.DOWN)
 		self.add_subview(title)
+		gestures.swipe(self,self.close_self,direction=gestures.DOWN)
+		
 		
 		cover = ui.ImageView()
 		self.cover = cover
-		gestures.long_press(cover,self.set_url)
+		gestures.long_press(cover, self.set_url)
 		cover.border_width=1
 		self.add_subview(cover)
 		
@@ -108,34 +94,32 @@ class Gallery_Page(ui.View):
 	def set_url(self,data):
 		import clipboard
 		clipboard.set(self.book.link)
+		
 	def close_self(self,data):
 		self.close()
+		
 	def set_info(self,book):
 		#self.views = views
 		self.book = book
 		self.cover.image = ui.Image.from_data(book.thumb_data)
 		self.title.text = book.title
+		
 	def add(self,button):
 		url = self.book.link
 		title = self.book.title
 		save_book(title,url)
+		
 	def read(self,button):
-		'''
-		url = self.book.link
-		view = reader(self.book.title)
-		view.present('fullscreen',hide_title_bar=True)
-		nhentai_read(url,view)
-		'''
 		self.App.client.read(self.book)
+		
 	def save(self,button):
 		link = self.book.link
 		self.client.download_book(self.save_button, link)
 		
-		
 	def layout(self):
-		title = self.title
 		gap = 3
 		
+		title = self.title
 		title.frame = (gap,gap,self.width-2*gap,50)
 		
 		cover = self.cover
@@ -180,5 +164,3 @@ class Gallery_Page(ui.View):
 		tags.y = author.y + author.height + gap
 		tags.width = cover.width
 		tags.height = 80
-
-

@@ -16,7 +16,10 @@ class App(object):
 		self.load_reader()
 		self.prepare_client()
 		self.load_main_menu()
+	def update(self):
+		self.Menu.update()
 		
+
 	def prepare_client(self):
 		self.client = api.Api_Controller(self)
 		
