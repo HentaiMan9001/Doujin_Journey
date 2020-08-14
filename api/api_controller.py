@@ -9,7 +9,7 @@ class Api_Controller():
 	def __setitem__(self, key, value):
 		self.apis[key] = value
 		
-	def __init__(self,App):
+	def __init__(self, App):
 		self.App = App
 		self.nhentai = api.nhentai_api(App)
 		self.apis = {
@@ -36,5 +36,5 @@ class Api_Controller():
 	def read(self, Book):
 		self.current_api.read(Book)
 		
-	def download_book(self,button,link):
-		self.current_api.download_book(button,link)
+	def download_book(self, button, book):
+		self.current_api.download_book(button, book)

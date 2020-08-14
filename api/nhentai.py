@@ -67,15 +67,7 @@ def get_book_info(book):
 	thumb = get_thumb(book)
 	gall_url = base_url+'g/'+gal_id+'/'
 	return {'title':title,'id':gal_id,'thumb':thumb,'link':gall_url}
-	
-def make_search_url(tags,page=1):
-	base_search_url = 'https://www.nhentai.net/?q={}&amp;page={}'
-	if tags == list():
-		tags = '+'.join(tags)
-		url = base_search_url.format(tags,page)
-		return url
-	else:
-		print('Please form tags into a list and try again')
+
 def check_for_title_in_photos_albums(title):
 	import photos
 	albums = photos.get_albums()
@@ -84,32 +76,16 @@ def check_for_title_in_photos_albums(title):
 		return True
 	else:
 		return False
+
+
 class Book():
 	def __init__(self,info):
 		self.title = info['title']
 		self.gallery_id = info['id']
 		self.thumb_data = info['thumb']['data']
 		self.link = info['link']
-		self.is_pre = self.is_album_in_photos()
 	def is_album_in_photos(self):
 		return check_for_title_in_photos_albums(self.title)
-		
-def make_search_url(tags):
-	base_url = 'https://nhentai.net/search/?q={}&amp;page=1'
-	
-	input_tags = '+'.join(tags)
-	url = base_url.format(input_tags)
-	return url
-	
-@ui.in_background
-def old_nhentai_search(tags,view):
-	url = make_search_url(tags)
-	soup = make_soup(url)
-	books = get_books(soup)
-	for book in books:
-		info = get_book_info(book)
-		the_book = Book(info)
-		view.add_book(the_book)
 		
 def nhentai_search(url,view):
 	soup = make_soup(url)
@@ -144,18 +120,6 @@ def nhentai_gallery(url):
 	info = get_tags(tag_sections)
 	return info
 
-
-def download(type,url):
-	if type == 'full':
-		
-		import Image
-		from io import BytesIO
-		import requests
-		req = requests.get(url)
-		img_data = BytesIO(req.content)
-		image = Image.open(img_data)
-		return image
-#download
 def get_img_urls(soup):
 	img_div = soup.find('div',{'class':'container','id':'thumbnail-container'})
 	imgs = img_div.find_all('img',{'class':'lazyload'})
@@ -183,13 +147,13 @@ def download_full(url):
 	img = Image.open(img_data)
 	return img
 
-def save_img_to_phone():
-	pass
-
 @ui.in_background
 def download_gallery(save_button,link):
-	import photos, Image, requests
+	import photos
+	import Image
+	import requests
 	from io import BytesIO
+	
 	soup = make_soup(link)
 	save_button.title = 'Soup Made'
 	info_div = soup.find('div',{'id':'info'})
@@ -262,13 +226,13 @@ class nhentai_api():
 		self.App = App
 		max_pages = {
 			'type':'number',
-			'title':'Max Pages:'
+			'title':'Max Pages:',
 			'key':'max'
 		}
 		
-		max_pages = {
+		min_pages = {
 			'type':'number',
-			'title':'Max Pages:'
+			'title':'Max Pages:',
 			'key':'max'
 		}
 		self.query_fields = [max_pages, min_pages]
@@ -280,11 +244,15 @@ class nhentai_api():
 		view.present('fullscreen',hide_title_bar = True)
 		nhentai_read(link, view)
 		
-	def download_book(self,button,link):
-		download_gallery(button,link)
+	def download_book(self,button,book):
+		if book.is_album_in_photos():
+			button.title = 'Already Saved'
+		else:
+			link = book.link
+			download_gallery(button,link)
 		
 	@ui.in_background
-	def search(self,tags):
+	def search(self, tags):
 		self.page = 1
 		#if self.App.
 		self.tags = tags
@@ -309,16 +277,3 @@ class nhentai_api():
 			nhentai_search(self.search_url,self.App.main_view)
 		else:
 			pass
-
-def main_test():
-	book_list = []
-	soup = make_soup('https://www.nhentai.net/search/?q=shota+yaoi+english')
-	books = get_books(soup)
-	for book in books:
-		info = get_book_info(book)
-		the_book = Book(info)
-		book_list.append(the_book)
-	
-	return book_list
-	
-books = main_test()
