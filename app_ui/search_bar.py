@@ -9,14 +9,15 @@ class nav_bar(ui.View):
 		self.height = 32
 		self.is_closed = True
 		
-		next_button = ui.Button()
+		self.next_button = next_button = ui.Button()
 		next_button.image = ui.Image.named('iob:arrow_right_c_32')
-		self.next_button = next_button
+		next_button.action = self.next
 		self.add_subview(next_button)
 		
 		back_button = ui.Button()
 		back_button.image = ui.Image.named('iob:arrow_left_c_32')
 		self.back_button = back_button
+		back_button.action = self.previous
 		self.add_subview(back_button)
 		
 		self.index = 1

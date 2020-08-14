@@ -29,7 +29,7 @@ class menu_bar(ui.View):
 			search_bar.is_open = False
 		else:
 			search_bar.is_open = True
-		self.App.Menu.layout()
+		ui.animate(self.App.Menu.layout, duration = 0.5)
 
 	def layout(self):
 		menu_button = self.menu_button
@@ -53,21 +53,7 @@ class Menu(ui.View):
 		
 		self.search_bar = App.search_bar
 		self.add_subview(self.search_bar)
-	def search_bar_drop(self):
-		menu_bar = self.menu_bar
-		search_bar = self.search_bar
-		if search_bar.y == menu_bar.y + menu_bar.height:
-			pass
-		else:
-			search_bar.y = menu_bar.y + menu_bar.height
 		
-	def search_bar_rise(self):
-		search_bar = self.search_bar
-		if search_bar.y == 0:
-			pass
-		else:
-			search_bar.y = 0
-			
 	def layout(self):
 		menu_bar = self.menu_bar
 		search_bar = self.search_bar
@@ -78,9 +64,9 @@ class Menu(ui.View):
 		search_bar.height = menu_bar.height
 		
 		if search_bar.is_open:
-			ui.animate(self.search_bar_drop, duration = 0.5)
+			search_bar.y = menu_bar.y + menu_bar.height
 		else:
-			ui.animate(self.search_bar_rise, duration = 0.5)
+			search_bar.y = 0
 			
 		
 		self.height = search_bar.height + menu_bar.height
