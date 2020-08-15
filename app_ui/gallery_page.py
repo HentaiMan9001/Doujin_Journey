@@ -85,15 +85,19 @@ class Gallery_Page(ui.View):
 		self.tags = tags
 		self.add_subview(tags)
 		
-	def set_url(self,data):
+	def set_url(self, data):
 		import clipboard
 		clipboard.set(self.book.link)
 		
 	def close_self(self,data):
 		self.close()
-		
-	def set_info(self,book):
-		#self.views = views
+	
+	def reset(self):
+		self.book = None
+		self.cover.image = None
+		self.title.text = ''
+	def set_info(self, book):
+		self.reset()
 		self.book = book
 		self.cover.image = ui.Image.from_data(book.thumb_data)
 		self.title.text = book.title
@@ -107,8 +111,7 @@ class Gallery_Page(ui.View):
 		self.App.client.read(self.book)
 		
 	def save(self,button):
-		link = self.book.link
-		self.App.client.download_book(self.save_button, link)
+		self.App.client.download_book(self.save_button, self.book)
 		
 	def layout(self):
 		gap = 3

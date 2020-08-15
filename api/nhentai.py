@@ -214,12 +214,10 @@ def save_book(title,url):
 	urls = get_img_urls(soup)
 	info = {title:urls}
 	save(info)
-	
-test_url = 'https://nhentai.net/g/311132/'
+
 
 class nhentai_api():
 	def __init__(self,App):
-		self.name = 'nhentai client'
 		self.base_query_url = 'https://nhentai.net/search/?q={}&amp;page={}'
 		self.history = []
 		self.page = 1
@@ -245,11 +243,8 @@ class nhentai_api():
 		nhentai_read(link, view)
 		
 	def download_book(self,button,book):
-		if book.is_album_in_photos():
-			button.title = 'Already Saved'
-		else:
-			link = book.link
-			download_gallery(button,link)
+		link = book.link
+		download_gallery(button,link)
 		
 	@ui.in_background
 	def search(self, tags):

@@ -37,4 +37,8 @@ class Api_Controller():
 		self.current_api.read(Book)
 		
 	def download_book(self, button, book):
-		self.current_api.download_book(button, book)
+		if book.is_album_in_photos():
+			import console
+			console.alert('Alert','The book titled "%s" is already an album in photos'%(book.title))
+		else:
+			self.current_api.download_book(button, book)

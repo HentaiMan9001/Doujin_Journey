@@ -21,10 +21,10 @@ class Book_Icon(ui.View):
 		img_box.background_image = ui.Image.from_data(book.thumb_data)
 		self.add_subview(img_box)
 		
-	def open_page(self,button):
-		page = app_ui.Gallery_Page(self.App)
+	def open_page(self, button):
+		page = self.App.page
 		page.set_info(self.book)
-		page.present('fullscreen',hide_title_bar=True)
+		page.present('fullscreen', hide_title_bar = True)
 		
 	def layout(self):
 		title = self.title_bar

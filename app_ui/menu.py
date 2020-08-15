@@ -67,6 +67,5 @@ class Menu(ui.View):
 			search_bar.y = menu_bar.y + menu_bar.height
 		else:
 			search_bar.y = 0
-			
 		
 		self.height = search_bar.height + menu_bar.height

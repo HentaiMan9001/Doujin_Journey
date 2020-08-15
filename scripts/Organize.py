@@ -40,10 +40,15 @@ def horiz(parent_view = None, ref_view = None, auto_sizing = True, view_list = l
 
 
 
-def vert(view_list = list(), dim = (50,50), gap = (0,4)):
-	view_width, view_height = dim
-	
+def vert(parent_view = None, ref_view = None, auto_sizing = True, view_list = list(), dim = (50,50), gap = (4,4)):
 	h_gap, v_gap = gap
+	
+	if auto_sizing:
+		view_width = parent_view.width - 2 * h_gap
+		view_height = view_width
+	else:
+		view_width, view_height = dim
+		
 	
 	#vertical (y) displacement of each view
 	y = lambda i: (view_height*i + v_gap*(i+1))
