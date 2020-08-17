@@ -1,31 +1,10 @@
-import ui,concurrent.futures
+import ui
 import requests
 from bs4 import BeautifulSoup
 import  app_ui
 
-__all__ = ['nhentai_api','nhentai_read','save_book','download_gallery']
+__all__ = ['nhentai_api','nhentai_read','save_book']
 
-def save(info):
-	import json,os
-	cwd = os.getcwd()
-	files_dir = os.path.join(cwd,'files','lib.json')
-	try:
-		with open(files_dir,'r') as file:
-			content = json.load(file)
-			file.close()
-		if info in content:
-			pass
-		else:
-			content.update(info)
-			with open(files_dir,'w') as file:
-				json.dump(content,file)
-				file.close()
-	except:
-		content = info
-		with open(files_dir,'w') as file:
-				json.dump(content,file)
-				file.close()
-				
 def make_soup(url):
 	import requests
 	from bs4 import BeautifulSoup
@@ -58,7 +37,7 @@ def get_thumb(book):
 	link = img.get('data-src')
 	image_req = requests.get(link)
 	raw_data = image_req.content
-	return {'data':raw_data}
+	return raw_data
 	
 def get_book_info(book):
 	base_url = 'https://www.nhentai.net/'
@@ -67,32 +46,15 @@ def get_book_info(book):
 	thumb = get_thumb(book)
 	gall_url = base_url+'g/'+gal_id+'/'
 	return {'title':title,'id':gal_id,'thumb':thumb,'link':gall_url}
-
-def check_for_title_in_photos_albums(title):
-	import photos
-	albums = photos.get_albums()
-	titles = [album.title for album in albums]
-	if title in titles:
-		return True
-	else:
-		return False
-
-
-class Book():
-	def __init__(self,info):
-		self.title = info['title']
-		self.gallery_id = info['id']
-		self.thumb_data = info['thumb']['data']
-		self.link = info['link']
-	def is_album_in_photos(self):
-		return check_for_title_in_photos_albums(self.title)
 		
 def nhentai_search(url,view):
+	import scripts
 	soup = make_soup(url)
 	books = get_books(soup)
 	for book in books:
+		the_book = scripts.Book()
 		info = get_book_info(book)
-		the_book = Book(info)
+		the_book.data = info
 		view.add_book(the_book)
 
 def get_tags(sects):
@@ -146,41 +108,6 @@ def download_full(url):
 	img_data = BytesIO(req.content)
 	img = Image.open(img_data)
 	return img
-
-@ui.in_background
-def download_gallery(save_button,link):
-	import photos
-	import Image
-	import requests
-	from io import BytesIO
-	
-	soup = make_soup(link)
-	save_button.title = 'Soup Made'
-	info_div = soup.find('div',{'id':'info'})
-	title = info_div.find('h1').text
-	urls = get_img_urls(soup)
-	total_pages = len(urls)
-	album = photos.create_album(title)
-	save_button.title = 'Album Made'
-	images = list()
-	i = 0
-	save_button.title = 'Begin'
-	with concurrent.futures.ThreadPoolExecutor() as exicutor:
-				results = exicutor.map(download_full,urls)
-				for img in results:
-					i += 1
-					save_button.title = 'Saved: %s/%s'%(i,total_pages)
-					images.append(img)
-	
-	for img in images:
-		photos.save_image(img)
-	assets = photos.get_assets()
-	
-	gall_assets = list()
-	for i in range(-total_pages,0):
-		gall_assets.append(assets[i])
-	album.add_assets(gall_assets)
-	save_button.title = 'Complete'
 					
 def save_book(soup, book):
 	book_name = book.title
@@ -200,21 +127,11 @@ def nhentai_read(url,view):
 					view.add_page(raw_data)
 		if len(view.pages) == url_count:
 			break
-				
-@ui.in_background
-def nhentai_download(url,view):
-	
-	soup = make_soup(url)
-	img_urls=get_img_urls(soup)
-	imgs = download('full',img_urls)
 
-def save_book(title,url):
-	title = title
-	soup = make_soup(url)
+def get_download_links(gallery_link):
+	soup = make_soup(link)
 	urls = get_img_urls(soup)
-	info = {title:urls}
-	save(info)
-
+	return urls
 
 class nhentai_api():
 	def __init__(self,App):
@@ -242,9 +159,11 @@ class nhentai_api():
 		view.present('fullscreen',hide_title_bar = True)
 		nhentai_read(link, view)
 		
-	def download_book(self,button,book):
+	def download_book(self, save_button, book):
 		link = book.link
-		download_gallery(button,link)
+		title = book.title
+		links = get_download_links(link)
+		scripts.download_book(button, links, title)
 		
 	@ui.in_background
 	def search(self, tags):
