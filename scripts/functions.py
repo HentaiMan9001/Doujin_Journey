@@ -1,5 +1,25 @@
 import ui
-__all__ = ['save_book', 'check_for_title_in_photos_albums', 'save_book_in_lib', 'download_book']
+__all__ = ['save_book', 'check_for_title_in_photos_albums', 'save_book_in_lib', 'download_book','load_settings_file']
+
+def save_settings_file():
+	pass
+def load_settings_file():
+	import json
+	import os
+	cwd = os.getcwd()
+	path = os.join(cwd,'files','settings.json')
+	with open(path, 'r', encoding = 'utf-8') as file:
+		settings = json.load(file)
+		file.close()
+	return settings
+
+def download_full(url):
+	import requests, Image
+	from io import BytesIO
+	req = requests.get(url)
+	img_data = BytesIO(req.content)
+	img = Image.open(img_data)
+	return img
 
 @ui.in_background
 def save_book(view, title, img_list):
@@ -70,7 +90,7 @@ def download_book(save_button, links, title):
 	i = 0
 	save_button.title = 'Begin'
 	with concurrent.futures.ThreadPoolExecutor() as exicutor:
-				results = exicutor.map(download_full,urls)
+				results = exicutor.map(download_full,links)
 				for img in results:
 					i += 1
 					save_button.title = 'Saved: %s/%s'%(i,total_pages)

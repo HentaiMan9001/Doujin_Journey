@@ -237,7 +237,11 @@ def grid(view_list = list(),parent_view = None, dim = (50,50), views_per_row =
 	#this enumerates the view_list and places them in refrence to the count/index
 	#of the view
 	for count, view in enumerate(view_list):
-		view.frame = (x(count),y(count),view_width,view_height)
+		frame = (x(count),y(count),view_width,view_height)
+		if view.frame == frame:
+			pass
+		else:
+			view.frame = frame
 	
 '''
 The View_Handler class is just a convinent way to organize the views within a parent view. without having to designate each

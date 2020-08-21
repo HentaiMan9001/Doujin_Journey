@@ -12,13 +12,10 @@ class section(ui.View):
 		self.title = title
 		self.items = []
 		self.add_subview(title)
-		
-		self.gap = 3
 	
-		scrolls = ui.ScrollView()
+		self.scrolls = scrolls = ui.ScrollView()
 		scrolls.border_width = 1
 		scrolls.corner_radius = 4
-		self.scrolls = scrolls
 		self.add_subview(scrolls)
 		
 	def set(self, info):
@@ -41,54 +38,51 @@ class section(ui.View):
 class Gallery_Page(ui.View):
 	def __init__(self, App):
 		self.App = App
-		
+		self.update_interval = 1
 		self.bg_color = 'white'
-		title = ui.Label()
+		self.title = title = ui.Label()
 		title.text = 'n/a'
 		title.alignment = ui.ALIGN_CENTER
-		self.title = title
 		title.border_width=1
 		title.corner_radius=4
 		self.add_subview(title)
 		gestures.swipe(self,self.close_self,direction=gestures.DOWN)
 		
 		
-		cover = ui.ImageView()
-		self.cover = cover
+		self.cover = cover = ui.ImageView()
 		gestures.long_press(cover, self.set_url)
 		cover.border_width=1
 		self.add_subview(cover)
 		
-		author = section('Author')
-		self.author = author
+		self.author = author = section('Author')
 		self.add_subview(author)
 		
-		read_button = ui.Button()
+		self.read_button = read_button = ui.Button()
 		read_button.title = 'Read'
-		self.read_button = read_button
 		read_button.action = self.read
 		self.add_subview(read_button)
 		
-		add_button = ui.Button()
+		self.add_button = add_button = ui.Button()
 		add_button.title='Add to Collection'
-		self.add_button = add_button
 		add_button.action = self.add
 		self.add_subview(add_button)
 		
-		save_button = ui.Button()
+		self.save_button = save_button = ui.Button()
 		save_button.title = 'Save'
 		save_button.action = self.save
-		self.save_button = save_button
 		self.add_subview(save_button)
 		
-		tags = section('Tags')
-		self.tags = tags
+		self.tags = tags = section('Tags')
 		self.add_subview(tags)
 		
 	def set_url(self, data):
 		import clipboard
+		import dialogs
 		clipboard.set(self.book.link)
-		
+		dialogs.alert('Clipboard set', 'The url for this book was sey to your clipboard.')
+	def update(self):
+		if self.save_button.title != 'Save':
+			self.save_button.title = 'Save'
 	def close_self(self,data):
 		self.close()
 	
@@ -96,10 +90,11 @@ class Gallery_Page(ui.View):
 		self.book = None
 		self.cover.image = None
 		self.title.text = ''
+		
 	def set_info(self, book):
 		self.reset()
 		self.book = book
-		self.cover.image = ui.Image.from_data(book.thumb_data)
+		self.cover.image = book.thumb_image
 		self.title.text = book.title
 		
 	def add(self,button):

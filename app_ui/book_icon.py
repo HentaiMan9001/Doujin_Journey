@@ -13,24 +13,14 @@ class Book_Icon(ui.View):
 		
 		self.title_bar = title_bar = ui.Label()
 		title_bar.bg_color = 'white'
+		title_bar.text = book.title
 		self.add_subview(title_bar)
 		
 		self.img_box = img_box = ui.Button()
 		img_box.action = self.open_page
+		img_box.background_image = book.thumb_image
 		self.add_subview(img_box)
-		
-	@property
-	def data(self):
-		return self.title_bar.text, self.img_box.image
-		
-	@data.setter
-	def data(self, book):
-		self.book
-		image, book_title
-		self.title_bar.text = book_title
-		self.img_box.image = ui.Image.from_data(book.thumb)
-		
-	
+
 	def open_page(self, button):
 		page = self.App.page
 		page.set_info(self.book)

@@ -1,4 +1,5 @@
 import ui
+import app_ui
 
 __all__ = ['nav_bar', 'input_ui']
 

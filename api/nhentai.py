@@ -2,6 +2,7 @@ import ui
 import requests
 from bs4 import BeautifulSoup
 import  app_ui
+import scripts
 
 __all__ = ['nhentai_api','nhentai_read','save_book']
 
@@ -101,14 +102,6 @@ def download_raw(url):
 	img_data = req.content
 	return img_data
 	
-def download_full(url):
-	import requests, Image
-	from io import BytesIO
-	req = requests.get(url)
-	img_data = BytesIO(req.content)
-	img = Image.open(img_data)
-	return img
-					
 def save_book(soup, book):
 	book_name = book.title
 	img_urls = get_img_urls(soup)
@@ -116,6 +109,7 @@ def save_book(soup, book):
 
 @ui.in_background
 def nhentai_read(url,view):
+	import concurrent.futures
 	soup = make_soup(url)
 	img_urls=get_img_urls(soup)
 	url_count = len(img_urls)
@@ -129,7 +123,7 @@ def nhentai_read(url,view):
 			break
 
 def get_download_links(gallery_link):
-	soup = make_soup(link)
+	soup = make_soup(gallery_link)
 	urls = get_img_urls(soup)
 	return urls
 
@@ -163,7 +157,7 @@ class nhentai_api():
 		link = book.link
 		title = book.title
 		links = get_download_links(link)
-		scripts.download_book(button, links, title)
+		scripts.download_book(save_button, links, title)
 		
 	@ui.in_background
 	def search(self, tags):

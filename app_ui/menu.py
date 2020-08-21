@@ -47,7 +47,7 @@ class Menu(ui.View):
 	def __init__(self,App):
 		self.name = 'menu'
 		self.App = App
-		
+		self.alpha = 0.8
 		self.menu_bar = App.menu_bar
 		self.add_subview(self.menu_bar)
 		

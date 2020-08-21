@@ -1,5 +1,24 @@
-__all__ = ['Book']
+__all__ = ['Book','Settings']
 
+class Settings:
+	def __init__(self):
+		import os
+		cwd = os.getcwd()
+		self.file_path =  os.join(cwd,'files','settings.json')
+		self.load_settings_file()
+		
+	def load_settings_file(self):
+		import json
+		with open(self.file_path, 'r', encoding = 'utf-8') as file:
+			settings = json.load(file)
+			file.close()
+		self.__dict__.update(settings)
+	
+	def save_settings_file(self):
+		import json
+		with open(self.file_path, 'w', encoding = 'utf-8') as file:
+			json.dump(self.__dict__)
+			file.close()
 
 class Book():	
 	@property
@@ -13,8 +32,11 @@ class Book():
 	@data.getter
 	def data(self, value = None):
 		return self.__dict__
-	
-	
+		
+	@property
+	def thumb_image(self):
+		import ui
+		return ui.Image.from_data(self.thumb)
 	def is_album_in_photos(self):
 		import scripts
 		return scripts.check_for_title_in_photos_albums(self.title)

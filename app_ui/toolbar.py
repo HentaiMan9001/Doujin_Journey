@@ -1,18 +1,28 @@
 import ui
 import scripts
-import gestures
+
+__all__ = ['Toolbar']
 
 class Toolbar(ui.View):
 	def __init__(self, App):
 		self.scrollview = ui.ScrollView()
-		self.items = list()
+		self._items = list()
 		
-	def set_items(self, items):
-		self.items = items
+	@property
+	def items(self):
+		return self.items
+		
+	@items.setter
+	def items(self, items):
+		self._items = items
 		self.layout()
-		for item in items:
+		for item in self._items:
 			self.scrollview.add_subview(item)
 			
+		
 	def layout(self):
 		self.scrollview.frame = self.bounds
-		scripts.vert(view_list = self.items, parent_view = self.scrollview)
+		
+		if len(self._items) is not 0:
+			scripts.vert(view_list = self._items, parent_view = self.scrollview)
+		else: pass

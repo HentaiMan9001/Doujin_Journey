@@ -24,15 +24,7 @@ class Main_View(ui.View):
 		self.scrollview = scroll_view
 		self.add_subview(scroll_view)
 	
-	def move_search_bar(self, button):
-		search_bar = self.App.search_bar
-		if search_bar.is_open:
-			menu_bar = self.App.menu_bar
-			search_bar.y = menu_bar.y + menu_bar.height
-			
-		else:
-			search_bar.y = 0
-			
+	
 	def close_self(self, data):
 		self.close()
 

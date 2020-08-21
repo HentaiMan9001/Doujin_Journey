@@ -7,6 +7,7 @@ __all__ = ['Reader']
 class Page_View_Delegate (object):
 	def __init__(self, page_label):
 		self.page_label = page_label	
+		
 	def scrollview_did_scroll(self, scrollview):
 		page_width = scrollview.width
 		x,y = scrollview.content_offset
@@ -149,6 +150,7 @@ class Reader(ui.View):
 		spacer = 18
 		
 		page_view = self.page_view
+		page_view.send_to_back()
 		progress_bar = self.progress_bar
 		progress_bar.height = 40
 		progress_bar.width = self.width
@@ -164,6 +166,7 @@ class Reader(ui.View):
 		page.x = 0
 		page.y = self.height - page.height
 		page.width = self.width
+		page.bring_to_front()
 
 def test():
 	view = Reader(None)
