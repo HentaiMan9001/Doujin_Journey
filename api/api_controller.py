@@ -1,6 +1,5 @@
-import api
-
-__all__ = ['Api_Controller']
+from scripts import app
+#__all__ = ['Api_Controller']
 
 class Api_Controller():
 	def __getitem__(self, key):
@@ -9,14 +8,12 @@ class Api_Controller():
 	def __setitem__(self, key, value):
 		self.apis[key] = value
 		
-	def __init__(self, App):
-		self.App = App
+	def __init__(self):
 		self.nhentai = api.nhentai_api(App)
-		self.apis = {
-			'nhentai':self.nhentai
-		}
+		self.apis = dict()
+	def add_client(self, client):
+		self.apis.update{client.hostname:client}
 		
-		self.current_api = self['nhentai']
 	def get_clients(self):
 		return list(self.apis.keys())
 		
@@ -42,3 +39,6 @@ class Api_Controller():
 			console.alert('Alert','The book titled "%s" is already an album in photos'%(book.title))
 		else:
 			self.current_api.download_book(button, book)
+			
+if __name__ == '__main__':
+	app.client = Api_Controller()

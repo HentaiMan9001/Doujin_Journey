@@ -1,17 +1,9 @@
 import ui
-import requests
-from bs4 import BeautifulSoup
-import  app_ui
-import scripts
+from scripts import app
+from scripts.functions import make_soup
+from core.client import Client
+from core.book import Book
 
-__all__ = ['nhentai_api','nhentai_read','save_book']
-
-def make_soup(url):
-	import requests
-	from bs4 import BeautifulSoup
-	req = requests.get(url)
-	soup = BeautifulSoup(req.content,'html5lib')
-	return soup
 	
 def get_gall_id(book):
 	import re
@@ -48,14 +40,14 @@ def get_book_info(book):
 	gall_url = base_url+'g/'+gal_id+'/'
 	return {'title':title,'id':gal_id,'thumb':thumb,'link':gall_url}
 		
-def nhentai_search(url,view):
-	import scripts
+def nhentai_search(url):
+	
 	soup = make_soup(url)
 	books = get_books(soup)
 	for book in books:
-		the_book = scripts.Book()
+		
 		info = get_book_info(book)
-		the_book.data = info
+		the_book = Book(info)
 		view.add_book(the_book)
 
 def get_tags(sects):
@@ -108,10 +100,11 @@ def save_book(soup, book):
 	download_gallery(img_urls)
 
 @ui.in_background
-def nhentai_read(url,view):
+def nhentai_read(url):
+	view = app.Reader
 	import concurrent.futures
 	soup = make_soup(url)
-	img_urls=get_img_urls(soup)
+	img_urls = get_img_urls(soup)
 	url_count = len(img_urls)
 	view.set_reader(url_count)
 	while view.is_reading:
@@ -127,61 +120,30 @@ def get_download_links(gallery_link):
 	urls = get_img_urls(soup)
 	return urls
 
-class nhentai_api():
-	def __init__(self,App):
+class Nhentai_Client(Client):
+	def __init__(self):
 		self.base_query_url = 'https://nhentai.net/search/?q={}&amp;page={}'
-		self.history = []
-		self.page = 1
-		self.App = App
-		max_pages = {
-			'type':'number',
-			'title':'Max Pages:',
-			'key':'max'
-		}
-		
-		min_pages = {
-			'type':'number',
-			'title':'Max Pages:',
-			'key':'max'
-		}
-		self.query_fields = [max_pages, min_pages]
+		self.hostname = 'nhentai'
 		
 	def read(self, Book):
 		link = Book.link
-		view = self.App.reader
+		view = app.reader
 		view.reset_reader()
 		view.present('fullscreen',hide_title_bar = True)
 		nhentai_read(link, view)
-		
+			
 	def download_book(self, save_button, book):
 		link = book.link
 		title = book.title
 		links = get_download_links(link)
 		scripts.download_book(save_button, links, title)
-		
-	@ui.in_background
-	def search(self, tags):
-		self.page = 1
-		#if self.App.
-		self.tags = tags
+	
+	def set_url(self):
 		tag_input = '+'.join(tags)
 		self.search_url = self.base_query_url.format(tag_input,self.page)
+
+	def get_books (self):
 		nhentai_search(self.search_url,self.App.main_view)
 		
-	@ui.in_background
-	def next_page(self):
-		self.page += 1
-		tag_input = '+'.join(self.tags)
-		self.search_url = self.base_query_url.format(tag_input,self.page)
-		nhentai_search(self.search_url,self.App.main_view)
-	def open_gallery_page(self,book):
-		pass
-		
-	@ui.in_background
-	def previous_page(self):
-		if self.page > 0:
-			self.page -= 1
-			self.search_url = self.base_query_url.format(self.tags,self.page)
-			nhentai_search(self.search_url,self.App.main_view)
-		else:
-			pass
+if __name__ == '__main__':
+	app.client.add_client(Nhentai_Client())

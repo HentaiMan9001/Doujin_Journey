@@ -1,6 +1,15 @@
 import ui
 __all__ = ['save_book', 'check_for_title_in_photos_albums', 'save_book_in_lib', 'download_book','load_settings_file']
 
+def make_soup(url):
+	import requests
+	from bs4 import BeautifulSoup
+	
+	req = requests.get(url)
+	soup = BeautifulSoup(req.content,'html5lib')
+	return soup
+
+
 def save_settings_file():
 	pass
 def load_settings_file():

@@ -20,26 +20,7 @@ class Settings:
 			json.dump(self.__dict__)
 			file.close()
 
-class Book():	
-	@property
-	def data(self):
-		return self.__dict__
-	
-	@data.setter
-	def data(self, data):
-		self.__dict__.update(data)
-	
-	@data.getter
-	def data(self, value = None):
-		return self.__dict__
-		
-	@property
-	def thumb_image(self):
-		import ui
-		return ui.Image.from_data(self.thumb)
-	def is_album_in_photos(self):
-		import scripts
-		return scripts.check_for_title_in_photos_albums(self.title)
+
 
 class Indexer():
 	def __init__(self):

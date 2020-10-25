@@ -1,10 +1,10 @@
 import ui
+from core.menu_bar import Menu_Bar
 
 __all__ = ['Menu','menu_bar']		
 	
 class menu_bar(ui.View):
-	def __init__(self, App):
-		self.App = App
+	def __init__(self):
 		
 		self.background_color = '#c3c2d7'
 		self.border_width = 1
@@ -44,14 +44,13 @@ class menu_bar(ui.View):
 		menu_button.width = search_button.width = self.height
 	
 class Menu(ui.View):
-	def __init__(self,App):
+	def __init__(self):
 		self.name = 'menu'
-		self.App = App
 		self.alpha = 0.8
-		self.menu_bar = App.menu_bar
+		self.menu_bar = app.menu_bar
 		self.add_subview(self.menu_bar)
 		
-		self.search_bar = App.search_bar
+		self.search_bar = app.search_bar
 		self.add_subview(self.search_bar)
 		
 	def layout(self):

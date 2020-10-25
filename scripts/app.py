@@ -1,5 +1,3 @@
-#from strings import string
-
 __all__ = ['App']
 import api
 import scripts

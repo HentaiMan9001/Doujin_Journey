@@ -3,13 +3,13 @@ import math
 import gestures
 import scripts
 import app_ui
+from scripts import app
 
 __all__=['Main_View']
 
 class Main_View(ui.View):
-	def __init__(self,App):
+	def __init__(self):
 		self.books = []
-		self.App = App
 		
 		self.Menu = App.Menu
 		self.Menu.bring_to_front()
@@ -57,4 +57,5 @@ class Main_View(ui.View):
 		scripts.grid(view_list = self.books, parent_view = scrollview, views_per_row = 3,aspect_ratio = 1.6)
 		
 
-#main()
+if __name__ == '__main__':
+	app.Main_View = Main_View()
