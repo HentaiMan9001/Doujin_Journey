@@ -1,31 +1,27 @@
-import api
+from scripts import app
+from api.nhentai import Nhentai_Client
 
-__all__ = ['Api_Controller']
-
-class Api_Controller():
+class Client_Controller():
+	apis = dict()
 	def __getitem__(self, key):
 		return self.apis[key]
 		
 	def __setitem__(self, key, value):
 		self.apis[key] = value
 		
-	def __init__(self, App):
-		self.App = App
-		self.nhentai = api.nhentai_api(App)
-		self.apis = {
-			'nhentai':self.nhentai
-		}
+	def __init__(self):
+		self.apis['nhentai'] = Nhentai_Client()
+		self.current_api = self.apis['nhentai']
 		
-		self.current_api = self['nhentai']
 	def get_clients(self):
 		return list(self.apis.keys())
 		
 	def switch(self, choice):
 		self.current_api = self.apis[choice]
 		
-	def search(self, tags):
-		self.App.nav.reset_index()
-		self.current_api.search(tags)
+	def search(self):
+		app.nav.reset_index()
+		self.current_api.search()
 		
 	def next_page(self):
 		self.current_api.next_page()
@@ -42,3 +38,4 @@ class Api_Controller():
 			console.alert('Alert','The book titled "%s" is already an album in photos'%(book.title))
 		else:
 			self.current_api.download_book(button, book)
+			

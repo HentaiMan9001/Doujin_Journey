@@ -1,11 +1,9 @@
 import ui
-
-__all__ = ['Menu','menu_bar']		
+from app_ui.search_bar import Search_Bar
+from scripts import app
 	
 class menu_bar(ui.View):
-	def __init__(self, App):
-		self.App = App
-		
+	def __init__(self):
 		self.background_color = '#c3c2d7'
 		self.border_width = 1
 		self.corner_radius = 4
@@ -24,12 +22,12 @@ class menu_bar(ui.View):
 		self.add_subview(search_button)
 		
 	def drop_search_bar(self, button):
-		search_bar = self.App.search_bar
+		search_bar = app.search_bar
 		if search_bar.is_open:
 			search_bar.is_open = False
 		else:
 			search_bar.is_open = True
-		ui.animate(self.App.Menu.layout, duration = 0.5)
+		ui.animate(app.Menu.layout, duration = 0.5)
 
 	def layout(self):
 		menu_button = self.menu_button
@@ -44,19 +42,18 @@ class menu_bar(ui.View):
 		menu_button.width = search_button.width = self.height
 	
 class Menu(ui.View):
-	def __init__(self,App):
+	def __init__(self):
 		self.name = 'menu'
-		self.App = App
 		self.alpha = 0.8
-		self.menu_bar = App.menu_bar
-		self.add_subview(self.menu_bar)
+		app.menu_bar = menu_bar()
+		self.add_subview(app.menu_bar)
 		
-		self.search_bar = App.search_bar
-		self.add_subview(self.search_bar)
+		app.search_bar = Search_Bar()
+		self.add_subview(app.search_bar)
 		
 	def layout(self):
-		menu_bar = self.menu_bar
-		search_bar = self.search_bar
+		menu_bar = app.menu_bar
+		search_bar = app.search_bar
 		
 		menu_bar.width = search_bar.width = self.width
 		menu_bar.bring_to_front()
@@ -69,3 +66,7 @@ class Menu(ui.View):
 			search_bar.y = 0
 		
 		self.height = search_bar.height + menu_bar.height
+		
+if __name__ == '__main__':
+	app.menu_bar = menu_bar()
+	app.Menu = Menu()

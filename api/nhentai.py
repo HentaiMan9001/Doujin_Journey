@@ -3,6 +3,8 @@ import requests
 from bs4 import BeautifulSoup
 import  app_ui
 import scripts
+from scripts import app
+from core.client import Client
 
 __all__ = ['nhentai_api','nhentai_read','save_book']
 
@@ -108,7 +110,8 @@ def save_book(soup, book):
 	download_gallery(img_urls)
 
 @ui.in_background
-def nhentai_read(url,view):
+def nhentai_read(url):
+	view = app.Reader
 	import concurrent.futures
 	soup = make_soup(url)
 	img_urls=get_img_urls(soup)
@@ -127,28 +130,18 @@ def get_download_links(gallery_link):
 	urls = get_img_urls(soup)
 	return urls
 
-class nhentai_api():
-	def __init__(self,App):
+class Nhentai_Client(Client):
+	def __init__(self):
 		self.base_query_url = 'https://nhentai.net/search/?q={}&amp;page={}'
-		self.history = []
-		self.page = 1
-		self.App = App
-		max_pages = {
-			'type':'number',
-			'title':'Max Pages:',
-			'key':'max'
-		}
-		
-		min_pages = {
-			'type':'number',
-			'title':'Max Pages:',
-			'key':'max'
-		}
-		self.query_fields = [max_pages, min_pages]
+	def set_url(self):
+		self.search_url = self.base_query_url.format('+'.join(app.client.tags),self.page)
+	
+	@ui.in_background
+	def get_books(self):
 		
 	def read(self, Book):
 		link = Book.link
-		view = self.App.reader
+		view = app.reader
 		view.reset_reader()
 		view.present('fullscreen',hide_title_bar = True)
 		nhentai_read(link, view)
@@ -159,29 +152,4 @@ class nhentai_api():
 		links = get_download_links(link)
 		scripts.download_book(save_button, links, title)
 		
-	@ui.in_background
-	def search(self, tags):
-		self.page = 1
-		#if self.App.
-		self.tags = tags
-		tag_input = '+'.join(tags)
-		self.search_url = self.base_query_url.format(tag_input,self.page)
-		nhentai_search(self.search_url,self.App.main_view)
-		
-	@ui.in_background
-	def next_page(self):
-		self.page += 1
-		tag_input = '+'.join(self.tags)
-		self.search_url = self.base_query_url.format(tag_input,self.page)
-		nhentai_search(self.search_url,self.App.main_view)
-	def open_gallery_page(self,book):
-		pass
-		
-	@ui.in_background
-	def previous_page(self):
-		if self.page > 0:
-			self.page -= 1
-			self.search_url = self.base_query_url.format(self.tags,self.page)
-			nhentai_search(self.search_url,self.App.main_view)
-		else:
-			pass
+

@@ -1,12 +1,10 @@
 import ui
 import app_ui
-
-__all__ = ['nav_bar', 'input_ui']
+from scripts import app
 
 class nav_bar(ui.View):
-	def __init__(self, App):
+	def __init__(self):
 		self.name = 'nav'
-		self.App = App
 		self.height = 32
 		self.is_closed = True
 		
@@ -64,16 +62,16 @@ class nav_bar(ui.View):
 	def next(self, button):
 		self.index += 1
 		self.page.text = str(self.index) 
-		self.App.client.next_page()
+		app.client.next_page()
 
 	def previous(self, button):
 		self.index -= 1
 		self.page.text = str(self.index) 
-		self.App.client.previous_page()
+		app.client.previous_page()
 
 class input_delegate (object):
-	def __init__(self, App, textfield):
-		self.App = App
+	def __init__(self, textfield):
+
 		self.textfield = textfield
 		self.gap = gap = 4
 		self.starting_x = self.gap
@@ -128,11 +126,10 @@ class input_delegate (object):
 			textfield.add_subview(label)
 			
 	def textfield_did_begin_editing(self,textfield):
-		App = self.App
 		search_button = self.search_button
-		App.nav.is_closed = True
-		App.search_bar.layout()
-		App.search_bar.label.text = 'Search: '
+		app.nav.is_closed = True
+		app.search_bar.layout()
+		app.search_bar.label.text = 'Search: '
 		try:
 			self.replace_labels_with_text()
 		except:
@@ -147,25 +144,22 @@ class input_delegate (object):
 		textfield.add_subview(self.search_button)
 		
 	def search(self, button):
-		App = self.App
-		App.nav.is_closed = False
-		App.search_bar.layout()
-		App.search_bar.label.text = ''
-		App.main_view.reset()
-		App.client.search(self.tags)
+		app.nav.is_closed = False
+		app.search_bar.layout()
+		app.search_bar.label.text = ''
+		app.Main_View.reset()
+		app.client.tags = self.tags
+		app.client.search()
 
-class input_ui(ui.View):
-	def __init__(self,App):
-		self.App = App
-		
+class Search_Bar(ui.View):
+	def __init__(self):
 		self.is_open = False
 		self.background_color = '#a2a2a2'
-		self.App = App
 		self.border_width = 1
 		self.corner_radius = 4
 		
-		self.nav = nav = App.nav
-		self.add_subview(nav)
+		app.nav = nav_bar()
+		self.add_subview(app.nav)
 		
 		label = ui.Label()
 		label.text = 'Search: '
@@ -177,7 +171,7 @@ class input_ui(ui.View):
 		field.border_width=1
 		field.corner_radius = 4
 		self.search_field = field
-		field.delegate = input_delegate(self.App,field)
+		field.delegate = input_delegate(field)
 		self.add_subview(self.search_field)
 
 	def open_nav(self):
@@ -196,14 +190,14 @@ class input_ui(ui.View):
 			nav.y = 0
 			
 	def move_nav_left(self):
-		nav = self.nav
+		nav = app.nav
 		if nav.y == - nav.width:
 			pass
 		else:
 			nav.y = - nav.width
 			
 	def layout(self):
-		nav = self.nav
+		nav = app.nav
 		nav.height = self.height
 		
 		label = self.label
@@ -219,3 +213,4 @@ class input_ui(ui.View):
 			ui.animate(self.move_nav_left, duration = 0.5)
 		else:
 			ui.animate(self.move_nav_right, duration = 0.5)
+			

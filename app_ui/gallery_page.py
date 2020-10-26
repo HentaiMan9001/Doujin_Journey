@@ -1,6 +1,7 @@
 import ui
 import gestures
 import scripts
+from scripts import app
 
 __all__ = ['Gallery_Page']
 
@@ -36,8 +37,7 @@ class section(ui.View):
 		#scripts.vert(view_list = self.items)
 		
 class Gallery_Page(ui.View):
-	def __init__(self, App):
-		self.App = App
+	def __init__(self):
 		self.update_interval = 1
 		self.bg_color = 'white'
 		self.title = title = ui.Label()
@@ -94,7 +94,7 @@ class Gallery_Page(ui.View):
 	def set_info(self, book):
 		self.reset()
 		self.book = book
-		self.cover.image = book.thumb_image
+		self.cover.image = book.cover
 		self.title.text = book.title
 		
 	def add(self,button):
@@ -103,10 +103,10 @@ class Gallery_Page(ui.View):
 		save_book(title,url)
 		
 	def read(self,button):
-		self.App.client.read(self.book)
+		app.client.read(self.book)
 		
 	def save(self,button):
-		self.App.client.download_book(self.save_button, self.book)
+		app.client.download_book(self.save_button, self.book)
 		
 	def layout(self):
 		gap = 3
@@ -156,3 +156,6 @@ class Gallery_Page(ui.View):
 		tags.y = author.y + author.height + gap
 		tags.width = cover.width
 		tags.height = 80
+		
+if __name__ == '__main__':
+	app.Gallery_Page = Gallery_Page()

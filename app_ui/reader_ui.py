@@ -1,6 +1,7 @@
 import ui
 import scripts
 import gestures
+from scripts import app
 
 __all__ = ['Reader']
 
@@ -64,8 +65,7 @@ class Progres_Indicator(ui.View):
 		
 
 class Reader(ui.View):
-	def __init__(self, App):
-		self.App = App
+	def __init__(self):
 		self.background_color = 'white'
 		
 		self.is_reading = True
@@ -168,9 +168,6 @@ class Reader(ui.View):
 		page.width = self.width
 		page.bring_to_front()
 
-def test():
-	view = Reader(None)
-	view.set_reader(10)
-	view.present('fullscreen',hide_title_bar = True)
-	
 
+if __name__ == '__main__':
+	app.Reader = Reader()

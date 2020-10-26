@@ -2,18 +2,17 @@ import ui
 import math
 import gestures
 import scripts
-import app_ui
+from app_ui.menu import Menu
 
-__all__=['Main_View']
+from scripts import app
 
 class Main_View(ui.View):
-	def __init__(self,App):
+	def __init__(self):
 		self.books = []
-		self.App = App
 		
-		self.Menu = App.Menu
-		self.Menu.bring_to_front()
-		self.add_subview(self.Menu)
+		app.Menu = Menu()
+		app.Menu.bring_to_front()
+		self.add_subview(app.Menu)
 		
 		self.update_interval = 0.5
 		self.bg_color='white'
@@ -41,11 +40,11 @@ class Main_View(ui.View):
 		self.layout()
 
 	def layout(self):
-		Menu = self.App.Menu
+		Menu = app.Menu
 		Menu.width = self.width
 		Menu.y = 18
 		
-		menu_bar = self.App.menu_bar
+		menu_bar = app.menu_bar
 		menu_bar.height = 32
 		
 		scrollview = self.scrollview
@@ -57,4 +56,5 @@ class Main_View(ui.View):
 		scripts.grid(view_list = self.books, parent_view = scrollview, views_per_row = 3,aspect_ratio = 1.6)
 		
 
-#main()
+if __name__ == '__main__':
+	app.Main_View = Main_View()
