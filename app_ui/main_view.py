@@ -9,8 +9,8 @@ from scripts import app
 class Main_View(ui.View):
 	def __init__(self):
 		self.books = []
-		
-		app.Menu = Menu()
+		app[self.__class__.__name__] = self
+		Menu()
 		app.Menu.bring_to_front()
 		self.add_subview(app.Menu)
 		
@@ -56,5 +56,5 @@ class Main_View(ui.View):
 		scripts.grid(view_list = self.books, parent_view = scrollview, views_per_row = 3,aspect_ratio = 1.6)
 		
 
-if __name__ == '__main__':
-	app.Main_View = Main_View()
+def load():
+	Main_View()

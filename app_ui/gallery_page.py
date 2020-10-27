@@ -38,6 +38,7 @@ class section(ui.View):
 		
 class Gallery_Page(ui.View):
 	def __init__(self):
+		app.Gallery_Page = self
 		self.update_interval = 1
 		self.bg_color = 'white'
 		self.title = title = ui.Label()
@@ -156,6 +157,6 @@ class Gallery_Page(ui.View):
 		tags.y = author.y + author.height + gap
 		tags.width = cover.width
 		tags.height = 80
-		
-if __name__ == '__main__':
-	app.Gallery_Page = Gallery_Page()
+
+def load():
+	Gallery_Page()

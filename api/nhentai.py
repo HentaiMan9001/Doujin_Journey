@@ -1,7 +1,6 @@
 import ui
 import requests
 from bs4 import BeautifulSoup
-import  app_ui
 import scripts
 from scripts import app
 from core.client import Client
@@ -134,11 +133,11 @@ class Nhentai_Client(Client):
 	def __init__(self):
 		self.base_query_url = 'https://nhentai.net/search/?q={}&amp;page={}'
 	def set_url(self):
-		self.search_url = self.base_query_url.format('+'.join(app.client.tags),self.page)
+		self.search_url = self.base_query_url.format('+'.join(app.client.tags),app.Gallery_Page)
 	
 	@ui.in_background
 	def get_books(self):
-		
+		pass
 	def read(self, Book):
 		link = Book.link
 		view = app.reader
