@@ -1,12 +1,14 @@
 import ui
 import gestures
 import scripts
-
+global App
 __all__ = ['Gallery_Page']
 
 class section(ui.View):
-	def __init__(self, name):
-		self.name = name
+	def __init__(self, section):
+		self.section = section
+		self.name = section.name
+		self.tags = section.tags
 		title = ui.Label()
 		title.text = name
 		self.title = title
@@ -17,11 +19,13 @@ class section(ui.View):
 		scrolls.border_width = 1
 		scrolls.corner_radius = 4
 		self.add_subview(scrolls)
-		
-	def set(self, info):
-		self.book_info = info
-		self.items = info[self.name]
-		
+	def set_items(self):
+		self.items = list()
+		for tag in self.tags:
+			tag_label = ui.Label(text=tag)
+			self.scrolls.add_subview(tag_label)
+			self.items.append(tag_label)
+
 	def layout(self):
 		title = self.title
 		title.alignment = ui.ALIGN_CENTER
@@ -33,8 +37,11 @@ class section(ui.View):
 		scrolls.width = self.width
 		scrolls.height = self.height-title.height
 		
-		#scripts.vert(view_list = self.items)
-		
+		scripts.vert(view_list = self.items)
+class Info_Div(ui.View):
+	def __init__(self, book):
+		self.book = book
+		self
 class Gallery_Page(ui.View):
 	def __init__(self, App):
 		self.App = App

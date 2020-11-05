@@ -1,5 +1,12 @@
 import ui
-__all__ = ['save_book', 'check_for_title_in_photos_albums', 'save_book_in_lib', 'download_book','load_settings_file']
+__all__ = ['save_book', 'check_for_title_in_photos_albums', 'save_book_in_lib', 'download_book','load_settings_file', 'make_soup']
+
+def make_soup(url):
+	import requests
+	from bs4 import BeautifulSoup
+	req = requests.get(url)
+	soup = BeautifulSoup(req.content,'html5lib')
+	return soup
 
 def save_settings_file():
 	pass
@@ -105,3 +112,4 @@ def download_book(save_button, links, title):
 		gall_assets.append(assets[i])
 	album.add_assets(gall_assets)
 	save_button.title = 'Complete'
+
