@@ -1,0 +1,16 @@
+SiteInfo{
+Name:(nHentai)
+Site:(https://www.nhentai.net/)
+}
+
+Search{
+SearchUrlFormat:(https://nhentai.net/search/?q={}&amp;page={})
+
+Gallery{
+GalleryDivClass:()
+
+}
+
+}
+
+

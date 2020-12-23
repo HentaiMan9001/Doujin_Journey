@@ -1,6 +1,7 @@
 import ui
 import scripts
 import gestures
+from scripts.app import App
 
 __all__ = ['Reader']
 
@@ -15,7 +16,7 @@ class Page_View_Delegate (object):
 		scrollview.page = (x//page_width) + 1
 		self.page_label.text = str(int(scrollview.page))
 
-class Progres_Indicator(ui.View):
+class Progress_Indicator(ui.View):
 	def __init__(self):
 		self.max = 0
 		self.count = 0
@@ -25,7 +26,6 @@ class Progres_Indicator(ui.View):
 		self.alpha = 0.8
 		
 		self.is_showing = False
-		
 		
 		self.current_page = 0
 		
@@ -95,6 +95,10 @@ class Reader(ui.View):
 	def close_reader(self, button):
 		self.is_reading = False
 		self.close()
+		
+	def open(self):
+		self.reset_reader()
+		self.present('fullscreen', hide_title_bar=True)
 	
 	def reset_reader(self):
 		for view in self.page_view.subviews:
@@ -167,10 +171,4 @@ class Reader(ui.View):
 		page.y = self.height - page.height
 		page.width = self.width
 		page.bring_to_front()
-
-def test():
-	view = Reader(None)
-	view.set_reader(10)
-	view.present('fullscreen',hide_title_bar = True)
-	
 
