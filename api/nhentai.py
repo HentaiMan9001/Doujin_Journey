@@ -140,7 +140,7 @@ class nhentai_api():
 		}
 		
 		min_pages = {
-			'type':'number',
+			'type':'number.',
 			'title':'Max Pages:',
 			'key':'max'
 		}

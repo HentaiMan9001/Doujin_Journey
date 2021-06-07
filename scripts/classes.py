@@ -20,7 +20,7 @@ class Settings:
 			json.dump(self.__dict__)
 			file.close()
 
-class Book():	
+class Book():
 	@property
 	def data(self):
 		return self.__dict__
