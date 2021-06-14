@@ -85,3 +85,6 @@ class Indexer():
 	def get(self):
 		info = (len(self.image_list),self.max)
 		return info
+		
+class Client:
+	
