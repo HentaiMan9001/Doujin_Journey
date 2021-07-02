@@ -38,15 +38,15 @@ def get_thumb(book):
 	link = img.get('data-src')
 	image_req = requests.get(link)
 	raw_data = image_req.content
-	return raw_data
+	return raw_data, link
 	
 def get_book_info(book):
 	base_url = 'https://www.nhentai.net/'
 	title = get_title(book)
 	gal_id = get_gall_id(book)
-	thumb = get_thumb(book)
+	thumb, thumb_url = get_thumb(book)
 	gall_url = base_url+'g/'+gal_id+'/'
-	return {'title':title,'id':gal_id,'thumb':thumb,'link':gall_url}
+	return {'title':title,'id':gal_id,'thumb_url':thumb_url,'thumb':thumb,'link':gall_url}
 		
 def nhentai_search(url,view):
 	import scripts
